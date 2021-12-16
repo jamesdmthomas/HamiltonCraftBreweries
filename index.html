@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <title>Craft Breweries Located in Hamilton, Ontario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet" />
+    <style>
+      body {
+        color: #3a0c0e;
+        font: 400 15px/22px 'Source Sans Pro', 'EngraversGothic BT', sans-serif;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .sidebar {
+        position: absolute;
+        width: 20%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        border-right: 1px solid rgba(0, 0, 0, 0.25);
+      }
+
+      .map {
+        position: absolute;
+        left: 20%;
+        width: 80%;
+        top: 0;
+        bottom: 0;
+      }
+
+      h1 {
+        font-size: 22px;
+        margin: 0;
+        font-weight: 400;
+        line-height: 20px;
+        padding: 20px 2px;
+      }
+
+      a {
+        color: #3a0c0e;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #3a0c0e;
+      }
+
+      .heading {
+        background: #f3bf38;
+        border-bottom: 1px solid #eee;
+        min-height: 30px;
+        line-height: 60px;
+        padding: 0 10px;
+        background-color: #f3bf38;
+        color: #3a0c0e;
+      }
+
+      .listings {
+        height: 100%;
+        overflow: auto;
+        padding-bottom: 60px;
+      }
+
+      .listings .item {
+        display: block;
+        border-bottom: 1px solid #eee;
+        padding: 10px;
+        text-decoration: none;
+      }
+
+      .listings .item:last-child {
+        border-bottom: none;
+      }
+
+      .listings .item .title {
+        display: block;
+        color: #f3bf38;
+        font-weight: 700;
+      }
+
+      .listings .item .title small {
+        font-weight: 400;
+      }
+
+      .listings .item.active .title,
+      .listings .item .title:hover {
+        color: #230b0b;
+      }
+
+      .listings .item.active {
+        background-color: #f8f4b3;
+      }
+
+      ::-webkit-scrollbar {
+        width: 3px;
+        height: 3px;
+        border-left: 0;
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      ::-webkit-scrollbar-track {
+        background: none;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #3a0c0e;
+        border-radius: 0;
+      }
+
+      .marker {
+        border: none;
+        cursor: pointer;
+        height: 62px;
+        width: 45px;
+        background-image: url(https://jamesdmthomas.github.io/imagefiles/beericon2.png);
+      }
+
+      /* Marker tweaks */
+      .mapboxgl-popup {
+        padding-bottom: 1px;
+      }
+
+      .mapboxgl-popup-close-button {
+        display: none;
+      }
+
+      .mapboxgl-popup-content {
+        font: 400 16px 'Source Sans Pro', 'EngraversGothic BT', sans-serif;
+        padding: 5px;
+        width: 300px;
+      }
+
+      .mapboxgl-popup-content h3 {
+        background: #f3bf38;
+        color: #3a0c0e;
+        margin: 0;
+        padding: 5px;
+        border-radius: 0px 0px 0 0;
+        font-weight: 700;
+        margin-top: 0px;
+      }
+
+      .mapboxgl-popup-content h2 {
+        margin: 5;
+        padding: 10px;
+        font-weight: 100;
+      }
+      }
+
+      .mapboxgl-popup-content h4 {
+        margin: 5;
+        padding: 10px;
+        font-weight: 100;
+      }
+
+      .mapboxgl-popup-content div {
+        padding: 2px;
+      }
+
+      .mapboxgl-popup-anchor-top>.mapboxgl-popup-content {
+        margin-top: 5px;
+      }
+
+      .mapboxgl-popup-anchor-top>.mapboxgl-popup-tip {
+        border-bottom-color: #f3bf38;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <div class="heading">
+        <h1>Hamilton Craft Breweries</h1>
+      </div>
+      <div id="listings" class="listings"></div>
+    </div>
+    <div id="map" class="map"></div>
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1IjoiamFtZXNkbXRob21hcyIsImEiOiJja3d6NXM4Y2UwbGowMm5wMmQwY3Q4ZWgyIn0.cKekU3V62utddwhW-KBrvw';
+
+      /**
+       * Add the map to the page
+       */
+      const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/jamesdmthomas/ckwz3ijpm0w3b14o141vug776',
+        center: [-79.85000610351562, 43.254205153548114],
+        zoom: 11.5,
+        scrollZoom: true
+      });
+
+      const stores = {
+        'type': 'FeatureCollection',
+        'features': [{
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-79.7682738304138, 43.24271353373664]
+            },
+            'properties': {
+              'phoneFormatted': '(905) 560-5444',
+              'phone': '9055605444',
+              'address': '398 Nash Rd N #1',
+              'website': '<a href="https://cliffordbrewing.com/">Clifford Brewing Co. website</a>',
+              'brewery': 'Clifford Brewing Co.',
+              'description': 'East Hamiltons Craft Brewery: Winner of 2019 Canadian Brewery of the Year, crafting several award winning brews!'
+            }
+          },
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-79.85286936163902, 43.2708526286581]
+            },
+            'properties': {
+              'phoneFormatted': '(289) 426-2374',
+              'phone': '2894262374',
+              'address': '207 Burlington St E',
+              'website': '<a href="https://collectiveartsbrewing.com/">Collective Arts Brewing website</a>',
+              'brewery': 'Collective Arts',
+              'description': 'Hip, modern brewery offering craft beer with limited edition artwork on the cans & regular events'
+            }
+          },
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-79.97597336769104, 43.22788082606172]
+            },
+            'properties': {
+              'phoneFormatted': '(905) 648-8863',
+              'phone': '9056488863',
+              'address': '375 Wilson St E, Ancaster',
+              'website': '<a href="https://brewersblackbird.ca/#home-section">Brewers Blackbird<br>Brewery and Kitchen website</a>',
+              'brewery': 'Brewers Blackbird Brewery and Kitchen',
+              'description': 'Elevated pub foods and boutique brewery located in the heart of Old Ancaster.'
+            }
+          },
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-79.93176251649857,
+                43.25500950527566
+              ]
+            },
+            'properties': {
+              'phoneFormatted': '(905) 570-0606',
+              'phone': '+19055700606',
+              'address': '5 Ofield Rd Unit #1',
+              'website': '<a href="https://fairweatherbrewing.com/">Fairweather Brewing Co. website</a>',
+              'brewery': 'Fairweather Brewing Co.',
+              'description': 'Revitalized warehouse in West Hamilton’s Ainslie Wood neighbourhood. Taproom, bottle shop, patio, and 10,000 sq. ft. event space'
+            }
+          },
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-79.9315807968378,
+                43.25673635931228
+              ]
+            },
+            'properties': {
+              'phoneFormatted': '(905) 769-1320',
+              'phone': '+19057691320',
+              'address': '11 Ewen Rd',
+              'website': '<a href="https://www.grainandgritbeer.com/">Grain & Grit Beer Co. website</a>',
+              'brewery': 'Grain & Grit Beer Co.',
+              'description': 'Couple-owned and operated small batch brewery, taproom, bottleshop, and patio'
+            }
+          },
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-79.86799098551273,
+                43.259482327532574
+              ]
+            },
+            'properties': {
+              'phoneFormatted': '(905) 393-1024',
+              'phone': '+19053931024',
+              'address': '107 James St N',
+              'website': '<a href="https://www.meritbrewing.ca/">Merit Brewing Co. website</a>',
+              'brewery': 'Merit Brewing Co.',
+              'description': 'Large industrial & timber-clad brewery offering draft beers plus elevated-meets-casual pub fare.'
+            }
+          },
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-79.95768874883652,
+                43.26566237846397
+              ]
+            },
+            'properties': {
+              'phoneFormatted': '(289) 238-9979',
+              'phone': '+12892389979',
+              'address': '65 Hatt St, Dundas',
+              'website': '<a href="https://www.lagershed.com/">Shaun & Ed Brewing Co.website</a>',
+              'brewery': 'Shaun & Ed Brewing Co.',
+              'description': 'Located in the historic landmark of the former Dundas Curling and Skating Rink, this brewery strives to produce the best possible beer using natural ingredients and brewing with great care and craftsmanship.'
+            }
+          },
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-79.97502788901329,
+                43.26797192355929
+              ]
+            },
+            'properties': {
+              'phoneFormatted': 'alex@steeltowncider.com',
+              'phone': 'N/A',
+              'address': '60 Head St, Dundas',
+              'website': '<a href="https://www.steeltowncider.com/">Steel Town Cider website</a>',
+              'brewery': 'Steel Town Cider',
+              'description': 'Craft hard cider in small batches from local apples here in Hamilton, Ontario <br><a href="https://www.steeltowncider.com/#ITtSch">Online Orders only, click here</a>'
+            }
+          }
+        ]
+      };
+
+      /**
+       * Assign a unique id to each store. You'll use this `id`
+       * later to associate each point on the map with a listing
+       * in the sidebar.
+       */
+      stores.features.forEach((store, i) => {
+        store.properties.id = i;
+      });
+
+      /**
+       * Wait until the map loads to make changes to the map.
+       */
+      map.on('load', () => {
+        /**
+         * This is where your '.addLayer()' used to be, instead
+         * add only the source without styling a layer
+         */
+        map.addSource('places', {
+          'type': 'geojson',
+          'data': stores
+        });
+
+        /**
+         * Add all the things to the page:
+         * - The location listings on the side of the page
+         * - The markers onto the map
+         */
+        buildLocationList(stores);
+        addMarkers();
+      });
+
+      /**
+       * Add a marker to the map for every store listing.
+       **/
+      function addMarkers() {
+        /* For each feature in the GeoJSON object above: */
+        for (const marker of stores.features) {
+          /* Create a div element for the marker. */
+          const el = document.createElement('div');
+          /* Assign a unique `id` to the marker. */
+          el.id = `marker-${marker.properties.id}`;
+          /* Assign the `marker` class to each marker for styling. */
+          el.className = 'marker';
+
+          /**
+           * Create a marker using the div element
+           * defined above and add it to the map.
+           **/
+          new mapboxgl.Marker(el, {
+              offset: [0, -23]
+            })
+            .setLngLat(marker.geometry.coordinates)
+            .addTo(map);
+
+          /**
+           * Listen to the element and when it is clicked, do three things:
+           * 1. Fly to the point
+           * 2. Close all other popups and display popup for clicked store
+           * 3. Highlight listing in sidebar (and remove highlight for all other listings)
+           **/
+          el.addEventListener('click', (e) => {
+            /* Fly to the point */
+            flyToStore(marker);
+            /* Close all other popups and display popup for clicked store */
+            createPopUp(marker);
+            /* Highlight listing in sidebar */
+            const activeItem = document.getElementsByClassName('active');
+            e.stopPropagation();
+            if (activeItem[0]) {
+              activeItem[0].classList.remove('active');
+            }
+            const listing = document.getElementById(
+              `listing-${marker.properties.id}`
+            );
+            listing.classList.add('active');
+          });
+        }
+      }
+
+      /**
+       * Add a listing for each store to the sidebar.
+       **/
+      function buildLocationList(stores) {
+        for (const store of stores.features) {
+          /* Add a new listing section to the sidebar. */
+          const listings = document.getElementById('listings');
+          const listing = listings.appendChild(document.createElement('div'));
+          /* Assign a unique `id` to the listing. */
+          listing.id = `listing-${store.properties.id}`;
+          /* Assign the `item` class to each listing for styling. */
+          listing.className = 'item';
+
+          /* Add the link to the individual listing created above. */
+          const link = listing.appendChild(document.createElement('a'));
+          link.href = '#';
+          link.className = 'title';
+          link.id = `link-${store.properties.id}`;
+          link.innerHTML = `${store.properties.brewery}`;
+
+          /* Add details to the individual listing. */
+          const details = listing.appendChild(document.createElement('div'));
+          details.innerHTML = `${store.properties.address}`;
+
+          if (store.properties.phone) {
+            details.innerHTML += `<br> ${store.properties.phoneFormatted}`;
+          }
+
+
+          /**
+           * Listen to the element and when it is clicked, do four things:
+           * 1. Update the `currentFeature` to the store associated with the clicked link
+           * 2. Fly to the point
+           * 3. Close all other popups and display popup for clicked store
+           * 4. Highlight listing in sidebar (and remove highlight for all other listings)
+           **/
+          link.addEventListener('click', function() {
+            for (const feature of stores.features) {
+              if (this.id === `link-${feature.properties.id}`) {
+                flyToStore(feature);
+                createPopUp(feature);
+              }
+            }
+            const activeItem = document.getElementsByClassName('active');
+            if (activeItem[0]) {
+              activeItem[0].classList.remove('active');
+            }
+            this.parentNode.classList.add('active');
+          });
+        }
+      }
+
+      /**
+       * Use Mapbox GL JS's `flyTo` to move the camera smoothly
+       * a given center point.
+       **/
+      function flyToStore(currentFeature) {
+        map.flyTo({
+          center: currentFeature.geometry.coordinates,
+          zoom: 18
+        });
+      }
+
+      /**
+       * Create a Mapbox GL JS `Popup`.
+       **/
+      function createPopUp(currentFeature) {
+        const popUps = document.getElementsByClassName('mapboxgl-popup');
+        if (popUps[0]) popUps[0].remove();
+        const popup = new mapboxgl.Popup({
+            closeOnClick: true
+          })
+          .setLngLat(currentFeature.geometry.coordinates)
+          .setHTML(
+            `<h3>${currentFeature.properties.website}</h3>
+            <h4>${currentFeature.properties.description}</h4>`
+          )
+          .addTo(map);
+      }
+
+    </script>
+  </body>
+
+</html>
